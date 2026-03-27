@@ -16,6 +16,7 @@ You can view the addon source code here: https://github.com/dev-fatal/queue-noti
 5. Run `pip install -r requirements.txt` and wait until complete.
 
 ## Setup
+### Telegram
 1. Install the [Telegram app](https://telegram.org/apps) on your phone and sign up
 2. Open a new message to the user `@BotFather` and type `/newbot`. You will then be prompted to fill in some values
 3. Enter a name such as `QueueNotify`
@@ -26,6 +27,63 @@ You can view the addon source code here: https://github.com/dev-fatal/queue-noti
 8. When running for the first time, it will prompt you to send a message to your bot. Do this by clicking the `t.me/{username}` link given to you by the BotFather. Note you need to type something as well as the default `/start`.
 9. Stop monitoring by closing the Command Prompt window.
 
+### Home Assistant
+Home Assistant integration supports three notification methods: persistent notifications, mobile app notifications, or custom notifiers.
+
+#### Prerequisites
+1. Have a Home Assistant instance running and accessible from your computer
+2. Know your Home Assistant URL (e.g., `http://homeassistant.local:8123` or `http://192.168.1.100:8123`)
+
+#### Creating a Long-Lived Access Token
+1. In Home Assistant, go to **Settings** > **Devices & Services** > **Long-Lived Access Tokens** (at the bottom)
+2. Click **Create Token** and name it `QueueNotify` (or something similar)
+3. Copy the token and save it somewhere safe
+4. Update `ha_token` in `config.toml` with this token
+
+#### Option 1: Persistent Notifications
+Sends notifications that appear in Home Assistant's notification panel and persist until dismissed.
+
+1. Set `ha_service = "persistent_notification"` in `config.toml`
+2. Add these to your Home Assistant configuration (optional, for customization):
+   ```yaml
+   # In configuration.yaml
+   homeassistant:
+     customize:
+       notify.persistent_notification:
+         friendly_name: "Queue Notify"
+   ```
+3. Test: Run `python main.py` and trigger a queue notification
+
+#### Option 2: Mobile App Notifications
+Sends push notifications to your phone via the Home Assistant app.
+
+1. Install the [Home Assistant mobile app](https://www.home-assistant.io/app/) on your phone
+2. Log in and complete the setup
+3. Find your device name by going to **Settings** > **Devices & Services** > **Devices** and looking for your phone
+4. Alternatively, check the notification service by going to **Developer Tools** > **Services** and finding the `notify.mobile_app_*` service
+5. Set `ha_service = "mobile_app_<device_name>"` in `config.toml` (e.g., `mobile_app_john_iphone` or `mobile_app_jane_samsung`)
+6. Test: Run `python main.py` and trigger a queue notification - you should receive a push notification
+
+#### Option 3: Custom Notifier
+Use a custom notification service you've configured in Home Assistant (MQTT, email, webhook, etc.).
+
+1. In Home Assistant, ensure your custom notification service is set up and working
+2. Get the service name by going to **Developer Tools** > **Services** and looking for your service under the `notify` domain
+3. The service name format is typically `notify.service_name`
+4. Set `ha_service = "service_name"` in `config.toml` (without the `notify.` prefix)
+5. Test: Run `python main.py` and trigger a queue notification
+
+#### Example config.toml for Home Assistant
+```toml
+token = ""  # Leave empty to use Home Assistant instead of Telegram
+path = "C:\\World of Warcraft"
+chat_id = ""
+
+# Home Assistant Settings
+ha_url = "http://192.168.1.100:8123"  # Your Home Assistant URL
+ha_token = "aGFBNOIiy50.kb2saHFGN33q40krgk13n56bBDG"  # Your long-lived access token
+ha_service = "persistent_notification"  # Options: persistent_notification, mobile_app_<device>, or custom service name
+```
 
 ## Linux
 If using Linux, you should make the following changes:

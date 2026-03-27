@@ -28,24 +28,31 @@ def send_ha_notification(ha_url, ha_token, ha_service, message="Your Solo Shuffl
         "Content-Type": "application/json"
     }
     
-    # Payload structure depends on the service type
+    # Payload structure and endpoint depend on the service type
     if ha_service.startswith("mobile_app_"):
+        api_path = "/api/services/notify/"
         payload = {
             "message": message,
             "title": title,
             "data": {"tag": "queue_alert"}
         }
-    else:  # persistent_notification or custom notifier
+    elif ha_service == "persistent_notification":
+        api_path = "/api/services/notify/"
         payload = {
             "message": message,
             "title": title
         }
-    
+    else:
+        api_path = "/api/webhook/"
+        payload = {
+            "message": message,
+            "title": title
+        }
+    url = ha_url.rstrip("/") + api_path + ha_service
     try:
-        url = f"{ha_url}/api/services/notify/{ha_service}"
         response = requests.post(url, json=payload, headers=headers, timeout=5)
         if response.status_code == 200:
-            print(f"Home Assistant notification sent successfully.")
+            print("Home Assistant notification sent successfully.")
         else:
             print(f"Home Assistant notification failed: {response.status_code} - {response.text}")
     except requests.exceptions.RequestException as e:
