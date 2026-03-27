@@ -1,7 +1,7 @@
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 import time
-from message import send_message
+from message import send_message, send_ha_notification
 import os
 
 
@@ -11,6 +11,9 @@ class ScanFolder:
         self.path = config["path"] + "\\_retail_\\Screenshots"
         self.token = config["token"]
         self.chat_id = config["chat_id"]
+        self.ha_url = config.get("ha_url", "")
+        self.ha_token = config.get("ha_token", "")
+        self.ha_service = config.get("ha_service", "persistent_notification")
         self.event_handler = PatternMatchingEventHandler(patterns=["*.tga"], ignore_patterns=None,
                                                          ignore_directories=False, case_sensitive=True)
         self.event_handler.on_created = self.on_created
@@ -19,8 +22,9 @@ class ScanFolder:
         self.observer.start()
 
     def on_created(self, event):
+        print("Queue detected! Sending alerts...")
         send_message(self.token, self.chat_id)
-        print("Sending message...")
+        send_ha_notification(self.ha_url, self.ha_token, self.ha_service)
         if os.path.exists(event.src_path):
             os.remove(event.src_path)  # Delete the screenshot we created
 

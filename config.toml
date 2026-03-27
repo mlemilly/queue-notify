@@ -1,3 +1,8 @@
 token = ""
 path = "C:\\Program Files (x86)\\World of Warcraft"
 chat_id = ""
+
+# Home Assistant Settings
+ha_url = ""  # e.g., http://homeassistant.local:8123 or http://192.168.1.100:8123
+ha_token = ""  # Long-lived access token from HA Settings > Devices & Services > Long-Lived Access Tokens
+ha_service = "persistent_notification"  # Options: persistent_notification, mobile_app_<device>, or custom notifier
