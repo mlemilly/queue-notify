@@ -1,0 +1,11 @@
+token = ""  # Leave empty to use Home Assistant instead of Telegram
+path = "C:\\Program Files (x86)\\World of Warcraft"
+chat_id = ""
+
+# Home Assistant Settings
+# Your Home Assistant URL
+ha_url = ""
+# Your long-lived access token
+ha_token = ""
+# Options: persistent_notification, mobile_app_<device>, or custom service name
+ha_service = "persistent_notification"
